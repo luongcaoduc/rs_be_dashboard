@@ -26,5 +26,8 @@ router.post('/import-data', upload.single('datafile'), commonController.importDa
 router.post('/import-data2', upload.single('datafile'), commonController.importData2);
 router.post('/export-data', commonController.exportData);
 router.get('/craw-data', commonController.crawData);
+router.get('/test', (req, res) => {
+  res.send('hello');
+});
 
 module.exports = router;
