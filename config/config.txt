@@ -1,0 +1,24 @@
+{
+	"appconfig":
+		[
+			{"Name":"Dragon Epic Android","PackageID":"com.rocket.dragon.epic","IronSourceAppKey":"ab27373d","AppflyerAppID":"com.rocket.dragon.epic", "Device":"Android", "Country":"US,UK,FR,JP,CA,VN,AU,IT,SA,RU,Others"},			
+			{"Name":"Dragon Shooter Android","PackageID":"com.rocket.dragon","IronSourceAppKey":"b0237735","AppflyerAppID":"com.rocket.dragon", "Device":"Android", "Country":"US,UK,FR,JP,CA,VN,AU,IT,SA,RU,Others"},	
+			{"Name":"Word Cross Android","PackageID":"com.pizzagames.wordcrossy","IronSourceAppKey":"c4c10f15","AppflyerAppID":"com.pizzagames.wordcrossy", "Device":"Android", "Country":"US,UK,FR,JP,CA,VN,AU,IT,SA,RU,Others"},	
+			{"Name":"Dragon Epic IOS","PackageID":"1492539191","IronSourceAppKey":"c4e8d61d","AppflyerAppID":"id1492539191", "Device":"IOS", "Country":"US,UK,FR,JP,CA,VN,AU,IT,SA,RU,Others"},			
+			{"Name":"Dragon Shooter IOS","PackageID":"1530916159","IronSourceAppKey":"d542e8b5","AppflyerAppID":"id1530916159", "Device":"IOS", "Country":"US,UK,FR,JP,CA,VN,AU,IT,SA,RU,Others"},
+			{"Name":"Zombie War Android","PackageID":"com.zombie.war.idle.defense","IronSourceAppKey":"da93c531","AppflyerAppID":"com.zombie.war.idle.defense", "Device":"Android", "Country":"US,UK,FR,JP,KR,CA,VN,AU,IT,SA,RU,BR,Others"},
+			{"Name":"Stickman Master Android","PackageID":"com.unimob.stickman.master.shadow","IronSourceAppKey":"dcb9e9b1","AppflyerAppID":"com.unimob.stickman.master.shadow", "Device":"Android", "Country":"US,UK,FR,JP,CA,VN,AU,IT,SA,RU,Others"}
+		],				
+	"IronSource_SecretKey":"1de26c36a8b2b46452572880bdbff1fb",
+	"IronSource_RefreshToken":"ac7ebae58b7732f054a61ef53c706e6f",
+	"AppflyerAPIToken":"9cf57ac4-13a2-492d-a31e-f4e0c61b7668",
+	"Country":["US","UK","KR","JP","DE","BR"],
+	"GA_File": "ga_Thai.json",
+	"Report_file":"1J-osX1xjbVrVR_9bIS1ZT__kXR9oXrz8tI6kI_iDU0g",
+	"Sheet_Name":"Game_ROAS",
+	"Sheet_Country_Name":"Game_ROAS_Country",
+	"Timeout_AF":60000,
+	"Time_Report":["08:00:00", "09:30:00", "16:30:00", "21:00:00", "23:30:00"],
+	"Sheet_Row_Offset_Country":3,
+	"Sheet_Row_Offset":5
+}

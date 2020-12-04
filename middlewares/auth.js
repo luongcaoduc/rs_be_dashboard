@@ -1,18 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const auth = async (req, res, next) => {
+const authUser = async (req, res, next) => {
   try {
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
     const user = await User.findOne({ _id: decoded._id });
-
     if (!user) {
-      throw new Error();
-    }
-
-    if (user.role !== 'admin') {
       throw new Error();
     }
 
@@ -23,4 +17,22 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+const authAdmin = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const user = await User.findOne({ _id: decoded._id });
+    if (!user) throw new Error();
+    if (user.role !== 'admin') throw new Error();
+
+    req.user = user;
+    next();
+  } catch (e) {
+    res.status(401).send({ error: 'Please authenticate.' });
+  }
+};
+
+module.exports = {
+  authUser,
+  authAdmin,
+};

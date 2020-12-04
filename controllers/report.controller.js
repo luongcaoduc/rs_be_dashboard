@@ -1,53 +1,16 @@
 const Report = require('../models/report');
 
 module.exports = {
-  async getReportByDate(req, res) {
-    try {
-      const { page, pageSize } = req.query;
-      const { startDate, endDate, game } = req.body;
-      const findObject = {};
-
-      let resData = {};
-
-      if (startDate && endDate) {
-        Object.assign(findObject, {
-          Date: {
-            $gte: new Date(startDate).getTime(), $lte: new Date(endDate).getTime() + 86400000,
-          },
-        });
-      }
-
-      if (game) {
-        Object.assign(findObject, { Game: game });
-      }
-
-      if (Number(pageSize) === -1) {
-        resData = await Promise.all([Report.find(findObject),
-          Report.find(findObject).countDocuments(),
-        ]);
-      } else {
-        resData = await Promise.all([Report.find(findObject)
-          .skip(parseInt((page - 1) * pageSize, 10))
-          .limit(parseInt(pageSize, 10)),
-        Report.find(findObject).countDocuments(),
-        ]);
-      }
-
-      res.status(200).send({ reports: resData[0], totals: resData[1] });
-    } catch (error) {
-      res.status(404).send(error);
-    }
-  },
-  async getReportWeek(req, res) {
+  async getAllReport(req, res) {
     try {
       const reports = await Report.aggregate([
-        // {
-        //   $match: { Date: { $lte: new Date('01/01/2020').getTime() } },
-        // },
+        {
+          $match: { Game: req.query.game },
+        },
         {
           $project: {
             Game: 1,
-            createdAtWeek: { $week: '$Date' },
+            Date: 1,
             year: { $year: '$Date' },
             cost1: 1,
             cost2: 1,
@@ -103,8 +66,7 @@ module.exports = {
         {
           $group: {
             _id: {
-              year: '$year',
-              week: '$createdAtWeek',
+              Date: '$Date',
               Game: '$Game',
             },
             cost1: { $sum: '$cost1' },
@@ -158,7 +120,7 @@ module.exports = {
             rev25: { $sum: '$rev25' },
           },
         },
-        { $sort: { '_id.year': 1, '_id.week': 1 } },
+        { $sort: { '_id.Date': 1 } },
       ]);
 
       res.status(200).send(reports);
@@ -166,11 +128,69 @@ module.exports = {
       res.status(404).send(error);
     }
   },
-  async getReportWeekByGame(req, res) {
+  async getReportByDate(req, res) {
     try {
+      // const { page, pageSize } = req.query;
+      const { startDate, endDate, game } = req.body;
+      const findObject = {};
+      let resData = [];
+      if (req.user.role !== 'admin') {
+        const findConditions = [];
+        req.user.permissions.forEach((r) => {
+          findConditions.push({ Game: r });
+        });
+        Object.assign(findObject, {
+          $or: findConditions,
+        });
+      }
+      if (startDate && endDate) {
+        Object.assign(findObject, {
+          Date: {
+            $gte: new Date(startDate).getTime(), $lte: new Date(endDate).getTime() + 86400000,
+          },
+        });
+      }
+
+      if (game) {
+        Object.assign(findObject, { Game: game });
+      }
+
+      resData = await Promise.all([Report.find(findObject),
+        Report.find(findObject).countDocuments(),
+      ]);
+      // if (Number(pageSize) === -1) {
+      //   resData = await Promise.all([Report.find(findObject),
+      //     Report.find(findObject).countDocuments(),
+      //   ]);
+      // } else {
+      //   resData = await Promise.all([Report.find(findObject)
+      //     .skip(parseInt((page - 1) * pageSize, 10))
+      //     .limit(parseInt(pageSize, 10)).sort({ Date: -1 }),
+      //   Report.find(findObject).countDocuments(),
+      //   ]);
+      // }
+
+      res.status(200).send({ reports: resData[0], totals: resData[1] });
+    } catch (error) {
+      res.status(404).send(error);
+    }
+  },
+  async getReportWeek(req, res) {
+    try {
+      const matchObject = {};
+      if (req.user.role !== 'admin') {
+        const findConditions = [];
+        req.user.permissions.forEach((r) => {
+          findConditions.push({ Game: r });
+        });
+        Object.assign(matchObject, {
+          $or: findConditions,
+        });
+      }
+
       const reports = await Report.aggregate([
         {
-          $match: { Game: req.query.game },
+          $match: matchObject,
         },
         {
           $project: {
@@ -201,6 +221,7 @@ module.exports = {
             cost22: 1,
             cost23: 1,
             cost24: 1,
+            cost25: 1,
             rev1: 1,
             rev2: 1,
             rev3: 1,
@@ -259,6 +280,136 @@ module.exports = {
             cost22: { $sum: '$cost22' },
             cost23: { $sum: '$cost23' },
             cost24: { $sum: '$cost24' },
+            cost25: { $sum: '$cost25' },
+            rev1: { $sum: '$rev1' },
+            rev2: { $sum: '$rev2' },
+            rev3: { $sum: '$rev3' },
+            rev4: { $sum: '$rev4' },
+            rev5: { $sum: '$rev5' },
+            rev6: { $sum: '$rev6' },
+            rev7: { $sum: '$rev7' },
+            rev8: { $sum: '$rev8' },
+            rev9: { $sum: '$rev9' },
+            rev10: { $sum: '$rev10' },
+            rev11: { $sum: '$rev11' },
+            rev12: { $sum: '$rev12' },
+            rev13: { $sum: '$rev13' },
+            rev14: { $sum: '$rev14' },
+            rev15: { $sum: '$rev15' },
+            rev16: { $sum: '$rev16' },
+            rev17: { $sum: '$rev17' },
+            rev18: { $sum: '$rev18' },
+            rev19: { $sum: '$rev19' },
+            rev20: { $sum: '$rev20' },
+            rev21: { $sum: '$rev21' },
+            rev22: { $sum: '$rev22' },
+            rev23: { $sum: '$rev23' },
+            rev24: { $sum: '$rev24' },
+            rev25: { $sum: '$rev25' },
+          },
+        },
+        { $sort: { '_id.year': 1, '_id.week': 1 } },
+      ]);
+      res.status(200).send(reports);
+    } catch (error) {
+      res.status(404).send(error);
+    }
+  },
+  async getReportWeekByGame(req, res) {
+    try {
+      const reports = await Report.aggregate([
+        {
+          $match: { Game: req.body.game },
+        },
+        {
+          $project: {
+            Game: 1,
+            createdAtWeek: { $week: '$Date' },
+            year: { $year: '$Date' },
+            cost1: 1,
+            cost2: 1,
+            cost3: 1,
+            cost4: 1,
+            cost5: 1,
+            cost6: 1,
+            cost7: 1,
+            cost8: 1,
+            cost9: 1,
+            cost10: 1,
+            cost11: 1,
+            cost12: 1,
+            cost13: 1,
+            cost14: 1,
+            cost15: 1,
+            cost16: 1,
+            cost17: 1,
+            cost18: 1,
+            cost19: 1,
+            cost20: 1,
+            cost21: 1,
+            cost22: 1,
+            cost23: 1,
+            cost24: 1,
+            cost25: 1,
+            rev1: 1,
+            rev2: 1,
+            rev3: 1,
+            rev4: 1,
+            rev5: 1,
+            rev6: 1,
+            rev7: 1,
+            rev8: 1,
+            rev9: 1,
+            rev10: 1,
+            rev11: 1,
+            rev12: 1,
+            rev13: 1,
+            rev14: 1,
+            rev15: 1,
+            rev16: 1,
+            rev17: 1,
+            rev18: 1,
+            rev19: 1,
+            rev20: 1,
+            rev21: 1,
+            rev22: 1,
+            rev23: 1,
+            rev24: 1,
+            rev25: 1,
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: '$year',
+              week: '$createdAtWeek',
+              Game: '$Game',
+            },
+            cost1: { $sum: '$cost1' },
+            cost2: { $sum: '$cost2' },
+            cost3: { $sum: '$cost3' },
+            cost4: { $sum: '$cost4' },
+            cost5: { $sum: '$cost5' },
+            cost6: { $sum: '$cost6' },
+            cost7: { $sum: '$cost7' },
+            cost8: { $sum: '$cost8' },
+            cost9: { $sum: '$cost9' },
+            cost10: { $sum: '$cost10' },
+            cost11: { $sum: '$cost11' },
+            cost12: { $sum: '$cost12' },
+            cost13: { $sum: '$cost13' },
+            cost14: { $sum: '$cost14' },
+            cost15: { $sum: '$cost15' },
+            cost16: { $sum: '$cost16' },
+            cost17: { $sum: '$cost17' },
+            cost18: { $sum: '$cost18' },
+            cost19: { $sum: '$cost19' },
+            cost20: { $sum: '$cost20' },
+            cost21: { $sum: '$cost21' },
+            cost22: { $sum: '$cost22' },
+            cost23: { $sum: '$cost23' },
+            cost24: { $sum: '$cost24' },
+            cost25: { $sum: '$cost25' },
             rev1: { $sum: '$rev1' },
             rev2: { $sum: '$rev2' },
             rev3: { $sum: '$rev3' },
@@ -295,11 +446,21 @@ module.exports = {
     }
   },
   async getReportMonth(req, res) {
+    const matchObject = {};
+    if (req.user.role !== 'admin') {
+      const findConditions = [];
+      req.user.permissions.forEach((r) => {
+        findConditions.push({ Game: r });
+      });
+      Object.assign(matchObject, {
+        $or: findConditions,
+      });
+    }
     try {
       const reports = await Report.aggregate([
-        // {
-        //   $match: { Date: { $lte: new Date('01/01/2020').getTime() } },
-        // },
+        {
+          $match: matchObject,
+        },
         {
           $project: {
             Game: 1,
@@ -329,6 +490,7 @@ module.exports = {
             cost22: 1,
             cost23: 1,
             cost24: 1,
+            cost25: 1,
             rev1: 1,
             rev2: 1,
             rev3: 1,
@@ -387,6 +549,7 @@ module.exports = {
             cost22: { $sum: '$cost22' },
             cost23: { $sum: '$cost23' },
             cost24: { $sum: '$cost24' },
+            cost25: { $sum: '$cost25' },
             rev1: { $sum: '$rev1' },
             rev2: { $sum: '$rev2' },
             rev3: { $sum: '$rev3' },
@@ -426,7 +589,7 @@ module.exports = {
     try {
       const reports = await Report.aggregate([
         {
-          $match: { Game: req.query.game },
+          $match: { Game: req.body.game },
         },
         {
           $project: {
@@ -457,6 +620,7 @@ module.exports = {
             cost22: 1,
             cost23: 1,
             cost24: 1,
+            cost25: 1,
             rev1: 1,
             rev2: 1,
             rev3: 1,
@@ -515,6 +679,7 @@ module.exports = {
             cost22: { $sum: '$cost22' },
             cost23: { $sum: '$cost23' },
             cost24: { $sum: '$cost24' },
+            cost25: { $sum: '$cost25' },
             rev1: { $sum: '$rev1' },
             rev2: { $sum: '$rev2' },
             rev3: { $sum: '$rev3' },
@@ -552,7 +717,20 @@ module.exports = {
   },
   async getReportQuarter(req, res) {
     try {
+      const matchObject = {};
+      if (req.user.role !== 'admin') {
+        const findConditions = [];
+        req.user.permissions.forEach((r) => {
+          findConditions.push({ Game: r });
+        });
+        Object.assign(matchObject, {
+          $or: findConditions,
+        });
+      }
       const reports = await Report.aggregate([
+        {
+          $match: matchObject,
+        },
         {
           $project: {
             Game: 1,
@@ -594,6 +772,7 @@ module.exports = {
             cost22: 1,
             cost23: 1,
             cost24: 1,
+            cost25: 1,
             rev1: 1,
             rev2: 1,
             rev3: 1,
@@ -652,6 +831,7 @@ module.exports = {
             cost22: { $sum: '$cost22' },
             cost23: { $sum: '$cost23' },
             cost24: { $sum: '$cost24' },
+            cost25: { $sum: '$cost25' },
             rev1: { $sum: '$rev1' },
             rev2: { $sum: '$rev2' },
             rev3: { $sum: '$rev3' },
@@ -691,7 +871,7 @@ module.exports = {
     try {
       const reports = await Report.aggregate([
         {
-          $match: { Game: req.query.game },
+          $match: { Game: req.body.game },
         },
         {
           $project: {
@@ -793,7 +973,7 @@ module.exports = {
     }
   },
 
-  async getAllYear(req, res) {
+  async getAllYear(_req, res) {
     try {
       const years = await Report.aggregate([
         { $project: { year: { $year: '$Date' } } },
@@ -808,15 +988,27 @@ module.exports = {
   async getReportByWeek(req, res) {
     try {
       const { year, game } = req.body;
-      console.log(req.query);
       const matchObject = { $match: { '_id.year': year, '_id.week': { $gte: Number(req.query.startWeek), $lte: Number(req.query.endWeek) } } };
+      const matchObjectStart = {};
 
       if (game) Object.assign(matchObject.$match, { '_id.Game': game });
-      console.log(matchObject);
+
+      if (req.user.role !== 'admin') {
+        const findConditions = [];
+        req.user.permissions.forEach((r) => {
+          findConditions.push({ '_id.Game': r });
+        });
+        Object.assign(matchObject.$match, {
+          $or: findConditions,
+        });
+      }
+
+      // console.log(matchObject);
+
       const reports = await Report.aggregate([
-        // {
-        //   $match: { Date: { $lte: new Date('01/01/2020').getTime() } },
-        // },
+        {
+          $match: matchObjectStart,
+        },
         {
           $project: {
             Game: 1,

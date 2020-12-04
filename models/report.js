@@ -102,24 +102,33 @@ const reportSchema = new Schema({
     type: Number,
     default: 0,
   },
+  // Other 7
   cost20: {
     type: Number,
     default: 0,
   },
+  // Other 7
   cost21: {
     type: Number,
     default: 0,
   },
+  // Other 8
   cost22: {
     type: Number,
     default: 0,
   },
+  // Other 9
   cost23: {
     type: Number,
     default: 0,
   },
   // Mobwonder
   cost24: {
+    type: Number,
+    default: 0,
+  },
+  // Taptica
+  cost25: {
     type: Number,
     default: 0,
   },

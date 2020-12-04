@@ -24,6 +24,11 @@ const userSchema = new Schema({
   active_code: {
     type: String,
   },
+  permissions: [
+    {
+      type: String,
+    },
+  ],
 });
 
 userSchema.pre('save', async function (next) {
@@ -31,6 +36,7 @@ userSchema.pre('save', async function (next) {
   const user = this;
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
+    console.log(user);
   }
   next();
 });
@@ -47,27 +53,29 @@ userSchema.methods.toJSON = function () {
 
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  console.log(user);
-  // eslint-disable-next-line no-underscore-dangle
+
   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET_KEY);
 
   return token;
 };
 
 userSchema.statics.findByCredentials = async function (username, password) {
-  const user = await this.findOne({ username });
-  console.log(user);
-  if (!user) {
-    throw new Error('Unable to login');
+  try {
+    const user = await this.findOne({ username });
+    if (!user) {
+      throw new Error('Unable to login');
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      throw new Error('Unable to login');
+    }
+
+    return user;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    throw new Error('Unable to login');
-  }
-
-  return user;
 };
 
 const User = model('User', userSchema);
