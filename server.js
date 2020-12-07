@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const routes = require('./routes/index');
+const initUser = require('./initUser');
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 connectDB();
+
+initUser();
 
 app.use(morgan('dev'));
 app.use(cors());

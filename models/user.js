@@ -16,6 +16,7 @@ const userSchema = new Schema({
   role: {
     type: String,
     enum: ['admin', 'employees'],
+    default: 'employees',
   },
   active: {
     type: Boolean,
@@ -36,7 +37,6 @@ userSchema.pre('save', async function (next) {
   const user = this;
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
-    console.log(user);
   }
   next();
 });
